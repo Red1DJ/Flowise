@@ -47,3 +47,7 @@
 ## trading data cache
 **/trading_data
 **/test_trading_data
+**/test_perf
+**/benchmark_data
+**/test_perf_old
+**/test_perf_new
