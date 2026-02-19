@@ -51,3 +51,5 @@
 **/benchmark_data
 **/test_perf_old
 **/test_perf_new
+**/test_edge_cases
+**/test_safe_data
