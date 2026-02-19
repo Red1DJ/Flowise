@@ -1,4 +1,4 @@
-const axios = require('axios')
+// const axios = require('axios') // Reserved for future real API integration
 const fs = require('fs')
 const path = require('path')
 
@@ -18,6 +18,15 @@ class BacktestEngine {
         if (!fs.existsSync(this.dataDir)) {
             fs.mkdirSync(this.dataDir, { recursive: true })
         }
+    }
+
+    /**
+     * Sanitize symbol to prevent path traversal attacks
+     */
+    sanitizeSymbol(symbol) {
+        // Remove any path separators and special characters
+        // Allow only alphanumeric characters, hyphens, and underscores
+        return symbol.replace(/[^a-zA-Z0-9_-]/g, '').substring(0, 20)
     }
 
     /**
@@ -64,7 +73,8 @@ class BacktestEngine {
      * Fetch historical data from API and cache locally
      */
     async getHistoricalData(symbol, startDate, endDate) {
-        const cacheFile = path.join(this.dataDir, `${symbol}_${startDate}_${endDate}.json`)
+        const sanitizedSymbol = this.sanitizeSymbol(symbol)
+        const cacheFile = path.join(this.dataDir, `${sanitizedSymbol}_${startDate}_${endDate}.json`)
 
         // Check if data exists and is recent
         if (fs.existsSync(cacheFile)) {
@@ -130,7 +140,8 @@ class BacktestEngine {
      * Update local data cache incrementally
      */
     async updateLocalData(symbol, newData) {
-        const latestFile = path.join(this.dataDir, `${symbol}_latest.json`)
+        const sanitizedSymbol = this.sanitizeSymbol(symbol)
+        const latestFile = path.join(this.dataDir, `${sanitizedSymbol}_latest.json`)
 
         let existingData = []
         if (fs.existsSync(latestFile)) {

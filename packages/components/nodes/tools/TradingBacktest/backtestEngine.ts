@@ -1,4 +1,4 @@
-import axios from 'axios'
+// import axios from 'axios' // Reserved for future real API integration
 import * as fs from 'fs'
 import * as path from 'path'
 
@@ -54,6 +54,15 @@ export class BacktestEngine {
     }
 
     /**
+     * Sanitize symbol to prevent path traversal attacks
+     */
+    private sanitizeSymbol(symbol: string): string {
+        // Remove any path separators and special characters
+        // Allow only alphanumeric characters, hyphens, and underscores
+        return symbol.replace(/[^a-zA-Z0-9_-]/g, '').substring(0, 20)
+    }
+
+    /**
      * Main entry point for backtesting
      */
     async runBacktest(config: BacktestConfig): Promise<BacktestResult> {
@@ -97,7 +106,8 @@ export class BacktestEngine {
      * Fetch historical data from API and cache locally
      */
     private async getHistoricalData(symbol: string, startDate: string, endDate: string): Promise<HistoricalDataPoint[]> {
-        const cacheFile = path.join(this.dataDir, `${symbol}_${startDate}_${endDate}.json`)
+        const sanitizedSymbol = this.sanitizeSymbol(symbol)
+        const cacheFile = path.join(this.dataDir, `${sanitizedSymbol}_${startDate}_${endDate}.json`)
 
         // Check if data exists and is recent
         if (fs.existsSync(cacheFile)) {
@@ -163,7 +173,8 @@ export class BacktestEngine {
      * Update local data cache incrementally
      */
     private async updateLocalData(symbol: string, newData: HistoricalDataPoint[]): Promise<void> {
-        const latestFile = path.join(this.dataDir, `${symbol}_latest.json`)
+        const sanitizedSymbol = this.sanitizeSymbol(symbol)
+        const latestFile = path.join(this.dataDir, `${sanitizedSymbol}_latest.json`)
 
         let existingData: HistoricalDataPoint[] = []
         if (fs.existsSync(latestFile)) {
