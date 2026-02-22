@@ -43,3 +43,25 @@
 
 ## compressed
 **/*.tgz
+
+## trading data cache
+**/trading_data
+**/test_trading_data
+**/test_perf
+**/benchmark_data
+**/test_perf_old
+**/test_perf_new
+**/test_edge_cases
+**/test_safe_data
+
+## Python cache
+**/__pycache__
+**/*.pyc
+**/*.pyo
+**/*.pyd
+.Python
+*.so
+*.egg
+*.egg-info
+dist
+build
